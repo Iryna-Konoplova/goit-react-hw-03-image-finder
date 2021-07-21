@@ -22,7 +22,7 @@ class App extends Component {
   }
 
   onChangeQuery = query => {
-    this.setState({ searchQuery: query });
+    this.setState({ searchQuery: query, currentPage: 1, hits: [] });
     this.fetchHits();
   };
 
