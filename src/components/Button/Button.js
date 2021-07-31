@@ -1,8 +1,18 @@
-// Модули
-// import React from 'react';
+// // Модули
+import React from 'react';
+import PropTypes from 'prop-types';
 
-// const Button = () => {
+// Стили
+import styles from './button.module.css';
 
-// };
+const Button = ({ onClick }) => (
+  <button type="button" onClick={onClick} className={styles.Button}>
+    Load more
+  </button>
+);
 
-// export default Button;
+Button.propTypes = {
+  onClick: PropTypes.func.isRequired,
+};
+
+export default Button;

@@ -1,19 +1,22 @@
 // Модули
 import React, { Component } from 'react';
-import axios from 'axios';
 
 // Компоненты
 import Searchbar from './components/Searchbar';
-// import ImageGallery from './components/ImageGallery';
+import ImageGallery from './components/ImageGallery';
+import Button from './components/Button';
+import newsApi from './services/news-api';
 
 class App extends Component {
   state = {
     hits: [],
     currentPage: 1,
     searchQuery: '',
+    isLoading: false,
+    error: null,
   };
 
-  componentDidMount() {}
+  // componentDidMount() {}
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.searchQuery !== this.state.searchQuery) {
@@ -22,45 +25,52 @@ class App extends Component {
   }
 
   onChangeQuery = query => {
-    this.setState({ searchQuery: query, currentPage: 1, hits: [] });
-    this.fetchHits();
+    this.setState({
+      searchQuery: query,
+      currentPage: 1,
+      hits: [],
+      error: null,
+    });
+
+    // this.setState({ searchQuery: query, currentPage: 1, hits: [] });
+    // this.fetchHits();
   };
 
   fetchHits = () => {
     const { currentPage, searchQuery } = this.state;
+    const options = { searchQuery, currentPage };
 
-    axios
-      .get(
-        `https://pixabay.com/api/?key=21824668-10aeb8c8af54ec25684dd6884&q=${searchQuery}&page=${currentPage}&image_type=photo&per_page=12`,
-      )
-      .then(response => {
+    this.setState({ isLoading: true });
+
+    // newsApi.fetchHits(options)
+    //   .then(hits => {
+    //     this.setState(prevState => ({
+    //       hits: [...prevState.hits, ...hits],
+    //       currentPage: prevState.currentPage + 1,
+    //     })).catch(error => this.setState({error}))
+    //   }).finally(() => this.setState({ isLoading: false }));
+    newsApi
+      .fetchHits(options)
+      .then(hits => {
         this.setState(prevState => ({
-          hits: [...prevState.hits, ...response.data.hits],
+          hits: [...prevState.hits, ...hits],
           currentPage: prevState.currentPage + 1,
         }));
-      });
+      })
+      .finally(() => this.setState({ isLoading: false }));
   };
 
   render() {
-    const { hits } = this.state;
+    const { hits, isLoading } = this.state;
+    const shouldRenderLoadMoreButton = hits.length > 0 && !isLoading;
     return (
       <div>
         <Searchbar onSubmit={this.onChangeQuery} />
-        <ul className="ImageGallery">
-          {hits.map(({ id, webformatURL }) => (
-            <li className="ImageGalleryItem" key={id}>
-              <img
-                src={webformatURL}
-                alt=""
-                className="ImageGalleryItem-image"
-              />
-            </li>
-          ))}
-        </ul>
-        {/* <ImageGallery /> */}
-        <button type="button" onClick={this.fetchHits}>
-          Load more
-        </button>
+        {isLoading && <h1>Загружаем...</h1>}
+
+        <ImageGallery hits={hits} />
+
+        {shouldRenderLoadMoreButton && <Button onClick={this.fetchHits} />}
       </div>
     );
   }
