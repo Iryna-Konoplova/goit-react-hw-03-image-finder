@@ -5,20 +5,16 @@ import PropTypes from 'prop-types';
 // Стили
 import styles from '../ImageGalleryItem/imageGalleryItem.module.css';
 
-const ImageGalleryItem = ({ smallImage, largeImage, tags, onImageClick }) => (
+const ImageGalleryItem = ({ webformatURL, tags, largeImageURL }) => (
   <li className={styles.ImageGalleryItem}>
-    <img
-      src={smallImage}
-      alt={tags}
-      className={styles.ImageGalleryItemImage}
-      onClick={() => onImageClick(largeImage, tags)}
-    />
+    <img src={webformatURL} alt={tags} data-url={largeImageURL} />
   </li>
 );
 
 ImageGalleryItem.propTypes = {
-  onClick: PropTypes.func.isRequired,
-  src: PropTypes.string.isRequired,
+  webformatURL: PropTypes.string.isRequired,
+  tags: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
 };
 
 export default ImageGalleryItem;
